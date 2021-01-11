@@ -1,0 +1,18 @@
+terraform {
+  required_version = "~> 0.13.4"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.0"
+    }
+    kubernetes = "~> 1.13.3"
+    null       = "~> 2.1"
+    helm       = "~> 1.0"
+    random     = "~> 2.2"
+    template   = "~> 2.1"
+  }
+}
+
+provider "aws" {
+  region = var.region
+}
