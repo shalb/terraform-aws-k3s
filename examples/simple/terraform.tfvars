@@ -1,4 +1,4 @@
-awsprofile              = "lotusflare-arti"
+awsprofile              = "cluster-dev"
 azs                     = ["eu-central-1a", "eu-central-1b"]
 region                  = "eu-central-1"
 master_instance_type    = "t3.medium"

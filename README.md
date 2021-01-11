@@ -4,13 +4,10 @@ Terraform module that creates a HA [K3s Cluster](https://k3s.io/) in AWS cloud a
 
 ## Prerequisites
 
-SSH credentials for Flux must be added before spinning up a cluster, please see [here](./docs/SECRETS.md)
 
 ### Key Features
 
 - [Embedded etcd](https://rancher.com/docs/k3s/latest/en/installation/ha-embedded/#embedded-etcd-experimental) cluster with autoheal capabilities.
-- Extendable and versioned [addons](docs/ADDONS.md) that could be pre-templated with infra vars.
-- Pre-installed [Flux GitOps toolkit](https://toolkit.fluxcd.io).
 - Cluster [Disaster Recovery](docs/RECOVERY.md) procedures.
 
 ## Principal Diagram
@@ -21,7 +18,6 @@ SSH credentials for Flux must be added before spinning up a cluster, please see 
 
 ```bash
 module
-├── addons              - directory with addon templates
 ├── files               - cloud-config user-data
 ├── infra.tf            - masters and workers ASG definition
 ├── init.tf             - Terraform requirements
@@ -108,7 +104,7 @@ Example of full and minimal worker group configs:
 
 ```HCL
 module "k3s" {
-  source           = "git::ssh://git@github.com/lotusflare/cm.git//terraform/k3s-cluster?ref=main"
+  source           = "git::ssh://git@github.com/shalb/terraform-aws-k3s.git"
   ... skipped for the brevity
   worker_node_groups = [
   # Full node group config.
@@ -144,45 +140,6 @@ module "k3s" {
     }
   ]
 
-}
-
-```
-
-## Flux addons configuration options
-
-`flux_addons_sources` is a list of maps, each element of which describes one addons source git repo and must correspond to the options described below.
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| identity | KMS encrypted private ssh key for git repo access | `string` | `""` | no |
-| identity\_pub | KMS encrypted public ssh key | `string` | `""` | Required if `identity` is not empty |
-| known\_hosts | KMS encrypted known hosts list (git host) | `string` | `""` | Required if `identity` is not empty |
-| addons\_git\_url | Git repo url for flux addons install | `string` | n/a | yes |
-| addons\_path | Path to addons folder in git repo | `string` | n/a | yes |
-
-An example of how to set 2 sources of addons:
-
-```HCL
-module "k3s" {
-  source           = "git::ssh://git@github.com/lotusflare/cm.git//terraform/k3s-cluster?ref=main"
-  ... skipped for the brevity
-  flux_addons_sources = [
-    {
-      name        = "private-repo-addons"
-      url         = "ssh://git@github.com/organization/flux-addons-private-repo"
-      path        = "./addons/dir"
-      branch      = "main"
-      identity     = "<KMS encrypted ssh private key>"
-      identity_pub = "<KMS encrypted ssh public key>"
-      known_hosts  = "<KMS encrypted ssh known_hosts file>"
-    },
-    {
-      name        = "public-repo-addons"
-      url         = "ssh://git@github.com/organization/flux-addons-pub-repo"
-      path        = "./addons/dir"
-      branch      = "main"
-    }
-  ]
 }
 
 ```
