@@ -51,3 +51,21 @@ resource "aws_security_group_rule" "allow_vxlan_worker_master" {
   source_security_group_id = aws_security_group.master.id
   security_group_id        = aws_security_group.worker.id
 }
+
+resource "aws_security_group_rule" "allow_prometheus_operator_metrics_worker_self" {
+  type              = "ingress"
+  from_port         = 6942
+  to_port           = 6942
+  protocol          = "tcp"
+  self              = "true"
+  security_group_id = aws_security_group.worker.id
+}
+
+resource "aws_security_group_rule" "allow_prometheus_operator_metrics_worker_master" {
+  type                     = "ingress"
+  from_port                = 6942
+  to_port                  = 6942
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.master.id
+  security_group_id        = aws_security_group.worker.id
+}
