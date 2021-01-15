@@ -52,42 +52,6 @@ resource "aws_security_group_rule" "allow_vxlan_worker_master" {
   security_group_id        = aws_security_group.worker.id
 }
 
-resource "aws_security_group_rule" "allow_cilium_healthcheck_worker_self_tcp" {
-  type              = "ingress"
-  from_port         = 4240
-  to_port           = 4240
-  protocol          = "tcp"
-  self              = "true"
-  security_group_id = aws_security_group.worker.id
-}
-
-resource "aws_security_group_rule" "allow_cilium_healthcheck_worker_master_tcp" {
-  type                     = "ingress"
-  from_port                = 4240
-  to_port                  = 4240
-  protocol                 = "tcp"
-  source_security_group_id = aws_security_group.master.id
-  security_group_id        = aws_security_group.worker.id
-}
-
-resource "aws_security_group_rule" "allow_cilium_healthcheck_worker_self_icmp" {
-  type              = "ingress"
-  from_port         = 8
-  to_port           = 0
-  protocol          = "icmp"
-  self              = "true"
-  security_group_id = aws_security_group.worker.id
-}
-
-resource "aws_security_group_rule" "allow_cilium_healthcheck_worker_worker_icmp" {
-  type                     = "ingress"
-  from_port                = 8
-  to_port                  = 0
-  protocol                 = "icmp"
-  source_security_group_id = aws_security_group.master.id
-  security_group_id        = aws_security_group.worker.id
-}
-
 resource "aws_security_group_rule" "allow_prometheus_operator_metrics_worker_self" {
   type              = "ingress"
   from_port         = 6942
@@ -101,42 +65,6 @@ resource "aws_security_group_rule" "allow_prometheus_operator_metrics_worker_mas
   type                     = "ingress"
   from_port                = 6942
   to_port                  = 6942
-  protocol                 = "tcp"
-  source_security_group_id = aws_security_group.master.id
-  security_group_id        = aws_security_group.worker.id
-}
-
-resource "aws_security_group_rule" "allow_cilium_agent_metrics_worker_self" {
-  type              = "ingress"
-  from_port         = 9876
-  to_port           = 9876
-  protocol          = "tcp"
-  self              = "true"
-  security_group_id = aws_security_group.worker.id
-}
-
-resource "aws_security_group_rule" "allow_cilium_agent_metrics_worker_master" {
-  type                     = "ingress"
-  from_port                = 9876
-  to_port                  = 9876
-  protocol                 = "tcp"
-  source_security_group_id = aws_security_group.master.id
-  security_group_id        = aws_security_group.worker.id
-}
-
-resource "aws_security_group_rule" "allow_cilium_agent_healthcheck_worker_self" {
-  type              = "ingress"
-  from_port         = 9090
-  to_port           = 9090
-  protocol          = "tcp"
-  self              = "true"
-  security_group_id = aws_security_group.worker.id
-}
-
-resource "aws_security_group_rule" "allow_cilium_agent_healthcheck_worker_master" {
-  type                     = "ingress"
-  from_port                = 9090
-  to_port                  = 9090
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.master.id
   security_group_id        = aws_security_group.worker.id
