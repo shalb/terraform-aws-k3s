@@ -19,7 +19,7 @@ data "template_file" "init-master" {
     instance_index   = count.index
     k3s_server_token = random_password.k3s_server_token.result
     k3s_version      = var.k3s_version
-    cluster_dns_zone = local.cluster_dns_zone
+    cluster_name     = var.cluster_name
     cluster_domain   = local.cluster_domain
     s3_bucket        = var.s3_bucket
     node_labels      = local.master_node_labels

@@ -60,6 +60,7 @@ module
 | extra\_api\_args | A list of additional arguments for kubeapi | `map` | `{}` | no |
 | k3s\_version | Version of k3s engine: https://github.com/rancher/k3s/releases | `string` | n/a | yes |
 | key\_name | The key name to use for the instances | `string` | n/a | yes |
+| kubeconfig\_filename | Name of file to save kubeconfig local. | `string` | `"./kubeconfig"` | no |
 | master\_additional\_tags | A list of additional tags for master nodes instances | `map(string)` | `{}` | no |
 | master\_iam\_instance\_profile | IAM instance profile to be attached to master instances | `string` | `""` | no |
 | master\_instance\_type | Instance type for master nodes. | `string` | `"t3.medium"` | no |
@@ -79,7 +80,7 @@ module
 | Name | Description |
 |------|-------------|
 | k8s\_nlb\_dns\_name | n/a |
-| kubeconfig | n/a |
+| kubeconfig\_s3\_url | n/a |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
