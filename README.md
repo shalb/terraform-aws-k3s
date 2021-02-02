@@ -47,6 +47,7 @@ module
 | Name | Version |
 |------|---------|
 | aws | ~> 3.0 |
+| local | n/a |
 | null | ~> 2.1 |
 | random | ~> 2.2 |
 | template | ~> 2.1 |
@@ -80,6 +81,7 @@ module
 | Name | Description |
 |------|-------------|
 | k8s\_nlb\_dns\_name | n/a |
+| kubeconfig | n/a |
 | kubeconfig\_s3\_url | n/a |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
