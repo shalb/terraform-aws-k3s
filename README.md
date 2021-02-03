@@ -58,7 +58,8 @@ module
 |------|-------------|------|---------|:--------:|
 | cluster\_name | Cluster name | `string` | n/a | yes |
 | domain | DNS zone record to assign to NLB | `string` | n/a | yes |
-| extra\_api\_args | A list of additional arguments for kubeapi | `map` | `{}` | no |
+| extra\_api\_args | A map of additional arguments for kubeapi. Key - argument without --, and it value. See examples. | `map` | `{}` | no |
+| extra\_args | A list of additional arguments for k3s server | `list` | `[]` | no |
 | k3s\_version | Version of k3s engine: https://github.com/rancher/k3s/releases | `string` | n/a | yes |
 | key\_name | The key name to use for the instances | `string` | n/a | yes |
 | kubeconfig\_filename | Name of file to save kubeconfig local. | `string` | `"./kubeconfig"` | no |

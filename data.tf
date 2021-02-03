@@ -24,7 +24,7 @@ data "template_file" "init-master" {
     s3_bucket        = var.s3_bucket
     node_labels      = local.master_node_labels
     node_taints      = local.master_node_taints
-    extra_api_args   = local.extra_api_args
+    extra_args       = local.extra_args
     kubeconfig_name  = local.kubeconfig_filename
   }
 }
