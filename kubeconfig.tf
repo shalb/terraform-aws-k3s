@@ -19,6 +19,6 @@ data "aws_s3_bucket_object" "get_kubeconfig" {
 }
 
 resource "local_file" "kubeconfig" {
-  content  = "${data.aws_s3_bucket_object.get_kubeconfig.body}"
+  content  = data.aws_s3_bucket_object.get_kubeconfig.body
   filename = var.kubeconfig_filename
 }
