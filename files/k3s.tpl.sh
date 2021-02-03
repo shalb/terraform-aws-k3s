@@ -49,9 +49,9 @@ software_install() {
   %{ if instance_index == "0" }
     cp /etc/rancher/k3s/k3s.yaml /tmp/
     sed -i 's/127.0.0.1/${cluster_domain}/g' /tmp/k3s.yaml
-    aws s3 cp --content-type text/plain /tmp/k3s.yaml s3://${s3_bucket}/${cluster_dns_zone}/${kubeconfig_name}
+    aws s3 cp --content-type text/plain /tmp/k3s.yaml s3://${s3_bucket}/${cluster_name}/${kubeconfig_name}
     mkdir -p /var/lib/rancher/k3s/server/db/snapshots/
-    echo "15 */12 * * *       root    aws s3 sync --delete /var/lib/rancher/k3s/server/db/snapshots/ s3://${s3_bucket}/${cluster_dns_zone}/backups/" >> /etc/crontab
+    echo "15 */12 * * *       root    aws s3 sync --delete /var/lib/rancher/k3s/server/db/snapshots/ s3://${s3_bucket}/${cluster_name}/backups/" >> /etc/crontab
     echo "" >> /etc/crontab
   %{ endif }
 

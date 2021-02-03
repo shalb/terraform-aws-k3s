@@ -97,3 +97,9 @@ variable worker_iam_instance_profile {
   type        = string
   default     = ""
 }
+
+variable "kubeconfig_filename" {
+  description = "Name of file to save kubeconfig local."
+  type        = string
+  default     = "./kubeconfig"
+}
