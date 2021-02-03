@@ -64,7 +64,6 @@ locals {
       "--kube-apiserver-arg \"${key}=${value}\""
   ])
   custom_args = join(" ", var.extra_args)
-  extra_args  = "${local.extra_api_args} ${local.custom_args}"
 }
 
 resource null_resource "validate_domain_length" {
