@@ -7,5 +7,5 @@ output "kubeconfig" {
 }
 
 output "kubeconfig_s3_url" {
-  value = "s3://${var.s3_bucket}/${var.cluster_name}/${local.kubeconfig_filename}"
+  value = "s3://${var.s3_bucket}/${var.cluster_name}/${local.s3_kubeconfig_filename}"
 }
