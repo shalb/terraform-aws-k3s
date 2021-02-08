@@ -1,9 +1,9 @@
-resource "random_pet" "kubeconfig_sufix" {}
+
 locals {
   name                = var.cluster_name
   cluster_dns_zone    = "${var.cluster_name}.${var.domain}"
   cluster_domain      = "cp.${local.cluster_dns_zone}"
-  kubeconfig_filename = "kubeconfig${random_pet.kubeconfig_sufix.id}"
+  kubeconfig_filename = "kubeconfig"
   common_tags = {
     "kubernetes.io/cluster/${var.cluster_name}" = "owned"
     KubernetesCluster                           = var.cluster_name
