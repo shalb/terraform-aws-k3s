@@ -24,7 +24,7 @@ software_install() {
     fi
   %{ endif }
   START_ARGS="server --cluster-domain ${cluster_domain} --secrets-encryption --node-name $(curl http://169.254.169.254/latest/meta-data/local-hostname)"
-  START_ARGS="$${START_ARGS} ${extra_api_args}"
+  START_ARGS="$${START_ARGS} ${extra_args}"
 %{ endif }
 
 %{ if instance_role == "worker" }

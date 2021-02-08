@@ -1,9 +1,9 @@
-resource "random_pet" "kubeconfig_sufix" {}
+
 locals {
-  name                = var.cluster_name
-  cluster_dns_zone    = "${var.cluster_name}.${var.domain}"
-  cluster_domain      = "cp.${local.cluster_dns_zone}"
-  kubeconfig_filename = "kubeconfig${random_pet.kubeconfig_sufix.id}"
+  name                   = var.cluster_name
+  cluster_dns_zone       = "${var.cluster_name}.${var.domain}"
+  cluster_domain         = "cp.${local.cluster_dns_zone}"
+  s3_kubeconfig_filename = "kubeconfig"
   common_tags = {
     "kubernetes.io/cluster/${var.cluster_name}" = "owned"
     KubernetesCluster                           = var.cluster_name
@@ -63,6 +63,7 @@ locals {
     [for key, value in var.extra_api_args :
       "--kube-apiserver-arg \"${key}=${value}\""
   ])
+  custom_args = join(" ", var.extra_args)
 }
 
 resource null_resource "validate_domain_length" {

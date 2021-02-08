@@ -81,10 +81,17 @@ variable worker_node_groups {
 }
 
 variable extra_api_args {
-  description = "A list of additional arguments for kubeapi"
+  description = "A map of additional arguments for kubeapi. Key - argument without --, and it value. See examples."
   type        = map
   default     = {}
 }
+
+variable extra_args {
+  description = "A list of additional arguments for k3s server"
+  type        = list
+  default     = []
+}
+
 
 variable master_iam_instance_profile {
   description = "IAM instance profile to be attached to master instances"

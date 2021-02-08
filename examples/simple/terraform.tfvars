@@ -10,3 +10,15 @@ s3_bucket               = "cluster-dev-k3s"
 cluster_name            = "k3s-test"
 key_name                = "arti-key"
 worker_node_groups      = []
+
+extra_api_args = {
+  oidc-issuer-url     = "https://example.com/my"
+  oidc-username-claim = "email"
+  oidc-groups-claim   = "groups"
+  oidc-client-id      = "login"
+  allow-privileged    = "true"
+}
+
+extra_args = [
+  "--disable traefik"
+]
