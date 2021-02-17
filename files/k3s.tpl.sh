@@ -33,7 +33,6 @@ software_install() {
 
 %{ if instance_role == "worker" }
   START_ARGS="agent --node-name $(curl http://169.254.169.254/latest/meta-data/local-hostname) \
-  --disable-cloud-controller \
   --kubelet-arg="cloud-provider=external" \
   --kubelet-arg="provider-id=aws:///$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)/$(curl -s http://169.254.169.254/latest/meta-data/instance-id)" \
   "

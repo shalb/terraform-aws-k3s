@@ -1,33 +1,9 @@
 # AWS K3s Terraform Module
 
-Terraform module that creates a HA [K3s Cluster](https://k3s.io/) in AWS cloud and deploys a set of core addons.
+Terraform module that creates a HA [K3s Cluster](https://k3s.io/) in AWS cloud.
 
 ## Prerequisites
 
-
-### Key Features
-
-- [Embedded etcd](https://rancher.com/docs/k3s/latest/en/installation/ha-embedded/#embedded-etcd-experimental) cluster with autoheal capabilities.
-- Cluster [Disaster Recovery](docs/RECOVERY.md) procedures.
-
-## Principal Diagram
-
-![k3s diagram](docs/k3s-module-diagram.png)
-
-## Structure
-
-```bash
-module
-├── files               - cloud-config user-data
-├── infra.tf            - masters and workers ASG definition
-├── init.tf             - Terraform requirements
-├── locals.tf           - local values and helpers
-├── nlb.tf              - Load-balancer definition
-├── outputs.tf          - Module outputs
-├── security_groups.tf  - AWS SG list
-├── variables.tf        - Terraform variables
-└── iam.tf              - IAM policies
-```
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
@@ -87,7 +63,7 @@ module
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
-## Worker node groups configuration options
+## Worker nodes groups configuration options
 
 `worker_node_groups` is a list of maps, each element of which describes one k3s worker nodes group and must correspond to the options described below.
 
@@ -103,47 +79,3 @@ module
 | node\_taints | A list of additional taints to be added to the k3s nodes | `list(string)` | `[]` | no |
 | additional\_security\_group\_ids | A list of additional security groups to be attached to node group instances | `list(string)` | `[]` | no |
 | tags | A list of additional tags to be attached to node group instances | `map(string)` | `{}` | no |
-
-Example of full and minimal worker group configs:
-
-```HCL
-module "k3s" {
-  source           = "git::ssh://git@github.com/shalb/terraform-aws-k3s.git"
-  ... skipped for the brevity
-  worker_node_groups = [
-  # Full node group config.
-    {
-      name                          = "node_pool1"
-      min_size                      = 2
-      max_size                      = 5
-      desired_capacity              = 2
-      root_volume_size              = 50
-      instance_type                 = "t3.medium"
-      additional_security_group_ids = [
-        "SG-EXAMPLE1",
-        "SG-EXAMPLE2"
-      ]
-      tags = {
-        tag-key1 = "value"
-        tag-key2 = "value2"
-      }
-      node_labels = [
-        "label_key=some_value",
-        "foo=bar"
-      ]
-      node_taints = [
-        "key=value:NoExecute"
-        "key2=value2:NoExecute"
-      ]
-    },
-    # Minimal node group config.
-    {
-      name        = "node_pool2"
-      min_size    = 1
-      max_size    = 1
-    }
-  ]
-
-}
-
-```
