@@ -23,12 +23,22 @@ software_install() {
       CLUSTER_INIT="--cluster-init"
     fi
   %{ endif }
-  START_ARGS="server --cluster-domain ${cluster_domain} --secrets-encryption --node-name $(curl http://169.254.169.254/latest/meta-data/local-hostname)"
+  START_ARGS="server --cluster-domain ${cluster_domain} --secrets-encryption --node-name $(curl http://169.254.169.254/latest/meta-data/local-hostname) \
+  --flannel-backend=none \
+  --disable-cloud-controller \
+  --kubelet-arg="cloud-provider=external" \
+  --kubelet-arg="provider-id=aws:///$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)/$(curl -s http://169.254.169.254/latest/meta-data/instance-id)" \
+  "
   START_ARGS="$${START_ARGS} ${extra_args}"
 %{ endif }
 
 %{ if instance_role == "worker" }
-  START_ARGS="agent --node-name $(curl http://169.254.169.254/latest/meta-data/local-hostname)"
+  START_ARGS="agent --node-name $(curl http://169.254.169.254/latest/meta-data/local-hostname) \
+  --flannel-backend=none \
+  --disable-cloud-controller \
+  --kubelet-arg="cloud-provider=external" \
+  --kubelet-arg="provider-id=aws:///$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)/$(curl -s http://169.254.169.254/latest/meta-data/instance-id)" \
+  "
 %{ endif }
 
   START_ARGS="$${START_ARGS} ${node_labels} ${node_taints}"
