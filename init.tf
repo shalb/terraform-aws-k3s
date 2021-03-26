@@ -5,11 +5,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 3.0"
     }
-    kubernetes = "~> 1.13.3"
-    null       = "~> 2.1"
-    helm       = "~> 1.0"
-    random     = "~> 2.2"
-    template   = "~> 2.1"
+    null     = "~> 2.1"
+    helm     = "~> 1.0"
+    random   = "~> 2.2"
+    template = "~> 2.1"
   }
 }
 

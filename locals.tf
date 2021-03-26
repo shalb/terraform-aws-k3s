@@ -34,6 +34,7 @@ locals {
       root_volume_size              = lookup(node_group_config, "root_volume_size", local.default_worker_root_volume_size)
       instance_type                 = lookup(node_group_config, "instance_type", local.default_worker_instance_type)
       additional_security_group_ids = sort(lookup(node_group_config, "additional_security_group_ids", []))
+      # iam_policies          = lookup(node_group_config, "iam_policies", "")
       tags = [
         for tag_key, tag_val in merge(lookup(node_group_config, "tags", {}), local.common_tags, { Name = node_group_config.name }) :
         {
@@ -44,6 +45,7 @@ locals {
       ]
     }
   }
+
   master_tags = [
     for tag_key, tag_val in merge(var.master_additional_tags, local.common_tags, { Name = "${var.cluster_name}-master" }) : {
       key                 = tag_key
@@ -64,6 +66,9 @@ locals {
       "--kube-apiserver-arg \"${key}=${value}\""
   ])
   custom_args = join(" ", var.extra_args)
+
+  master_iam_policy_default = file("${path.module}/policies/master.json")
+  worker_iam_policy_default = file("${path.module}/policies/worker.json")
 }
 
 resource null_resource "validate_domain_length" {

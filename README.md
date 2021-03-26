@@ -13,7 +13,6 @@ Terraform module that creates a HA [K3s Cluster](https://k3s.io/) in AWS cloud.
 | terraform | ~> 0.13.4 |
 | aws | ~> 3.0 |
 | helm | ~> 1.0 |
-| kubernetes | ~> 1.13.3 |
 | null | ~> 2.1 |
 | random | ~> 2.2 |
 | template | ~> 2.1 |
@@ -40,7 +39,7 @@ Terraform module that creates a HA [K3s Cluster](https://k3s.io/) in AWS cloud.
 | key\_name | The key name to use for the instances | `string` | n/a | yes |
 | kubeconfig\_filename | Name of file to save kubeconfig local. | `string` | `"./kubeconfig"` | no |
 | master\_additional\_tags | A list of additional tags for master nodes instances | `map(string)` | `{}` | no |
-| master\_iam\_instance\_profile | IAM instance profile to be attached to master instances | `string` | `""` | no |
+| master\_iam\_policies | A list of IAM policies ARNs to be attached to master instances | `list(string)` | `[]` | no |
 | master\_instance\_type | Instance type for master nodes. | `string` | `"t3.medium"` | no |
 | master\_node\_count | Number of nodes. Should be even: 1,3,5,7.. | `number` | `3` | no |
 | master\_node\_labels | A list of additional labels to be added to the k3s master nodes | `list` | `[]` | no |
@@ -50,7 +49,7 @@ Terraform module that creates a HA [K3s Cluster](https://k3s.io/) in AWS cloud.
 | public\_subnets | List of public subnets to run ingress LB | `list` | n/a | yes |
 | region | AWS Region | `string` | n/a | yes |
 | s3\_bucket | Kubeconfig Storage bucket | `any` | n/a | yes |
-| worker\_iam\_instance\_profile | IAM instance profile to be attached to worker instances | `string` | `""` | no |
+| worker\_iam\_policies | A list of IAM policies ARNs to be attached to all worker instances | `list(string)` | `[]` | no |
 | worker\_node\_groups | A list of worker groups configs | `any` | `[]` | no |
 
 ## Outputs
