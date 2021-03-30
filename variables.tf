@@ -105,8 +105,15 @@ variable worker_iam_policies {
   default     = []
 }
 
-variable kubeconfig_filename {
-  description = "Name of file to save kubeconfig local."
-  type        = string
-  default     = "./kubeconfig"
+
+variable enable_asg_rolling_auto_update {
+  description = "Turn on/off automatic rolling update of worker ASGs, when launch configuration changed."
+  type        = bool
+  default     = false
+}
+
+variable enable_scheduling_on_master {
+  description = "Allows running pods on master nodes."
+  type        = bool
+  default     = false
 }

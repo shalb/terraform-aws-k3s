@@ -13,9 +13,7 @@ locals {
   default_worker_node_labels = [
     #  "node-role.kubernetes.io/worker=true"
   ]
-  default_master_node_taints = [
-    #  "node-role.kubernetes.io/master:NoSchedule"
-  ]
+  default_master_node_taints = var.enable_scheduling_on_master == true ? [] : ["node-role.kubernetes.io/master:NoSchedule"]
   worker_groups_map = {
     for node_group_config in var.worker_node_groups :
     node_group_config.name => {
@@ -34,7 +32,6 @@ locals {
       root_volume_size              = lookup(node_group_config, "root_volume_size", local.default_worker_root_volume_size)
       instance_type                 = lookup(node_group_config, "instance_type", local.default_worker_instance_type)
       additional_security_group_ids = sort(lookup(node_group_config, "additional_security_group_ids", []))
-      # iam_policies          = lookup(node_group_config, "iam_policies", "")
       tags = [
         for tag_key, tag_val in merge(lookup(node_group_config, "tags", {}), local.common_tags, { Name = node_group_config.name }) :
         {
@@ -73,6 +70,6 @@ locals {
 
 resource null_resource "validate_domain_length" {
   provisioner "local-exec" {
-    command = "if [ ${length(local.cluster_domain)} -ge 38 ]; then echo \"ERR: \nThe length of the domain for kubeapi (domain:${local.cluster_domain}, length:${length(local.cluster_domain)}) must not exceed 37 characters.\nDomain name includes variables 'var.cluster_name' (${var.cluster_name}) and 'var.domain' (${var.domain}).\nCheck the length of these variables.\" ; exit 1; fi"
+    command = "if [ ${length(local.cluster_domain)} -ge 48 ]; then echo \"ERR: \nThe length of the domain for kubeapi (domain:${local.cluster_domain}, length:${length(local.cluster_domain)}) must not exceed 37 characters.\nDomain name includes variables 'var.cluster_name' (${var.cluster_name}) and 'var.domain' (${var.domain}).\nCheck the length of these variables.\" ; exit 1; fi"
   }
 }

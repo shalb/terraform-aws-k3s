@@ -18,7 +18,15 @@ data "aws_s3_bucket_object" "get_kubeconfig" {
   ]
 }
 
-resource "local_file" "kubeconfig" {
-  content  = data.aws_s3_bucket_object.get_kubeconfig.body
-  filename = var.kubeconfig_filename
+locals {
+  k_config = element(flatten([
+    for cl in yamldecode(data.aws_s3_bucket_object.get_kubeconfig.body).clusters : [
+      for u in yamldecode(data.aws_s3_bucket_object.get_kubeconfig.body).users : {
+        host      = cl.cluster.server
+        host_cert = base64decode(cl.cluster.certificate-authority-data)
+        user_crt  = base64decode(u.user.client-certificate-data)
+        cert_data = base64decode(u.user.client-key-data)
+      }
+    ]
+  ]), 0)
 }
