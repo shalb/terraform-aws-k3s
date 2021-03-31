@@ -70,6 +70,6 @@ locals {
 
 resource null_resource "validate_domain_length" {
   provisioner "local-exec" {
-    command = "if [ ${length(local.cluster_domain)} -ge 48 ]; then echo \"ERR: \nThe length of the domain for kubeapi (domain:${local.cluster_domain}, length:${length(local.cluster_domain)}) must not exceed 37 characters.\nDomain name includes variables 'var.cluster_name' (${var.cluster_name}) and 'var.domain' (${var.domain}).\nCheck the length of these variables.\" ; exit 1; fi"
+    command = "if [ ${length(local.cluster_domain)} -ge 38 ]; then echo \"ERR: \nThe length of the domain for kubeapi (domain:${local.cluster_domain}, length:${length(local.cluster_domain)}) must not exceed 37 characters.\nDomain name includes variables 'var.cluster_name' (${var.cluster_name}) and 'var.domain' (${var.domain}).\nCheck the length of these variables.\" ; exit 1; fi"
   }
 }

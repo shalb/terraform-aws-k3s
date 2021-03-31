@@ -29,7 +29,7 @@ resource "null_resource" "cloud_controller_addon_install" {
 
 data template_file "rolling_updater" {
   count    = var.enable_asg_rolling_auto_update == true ? 1 : 0
-  template = "${file("${path.module}/addons/rolling-update/main.yaml")}"
+  template = file("${path.module}/addons/rolling-update/main.yaml")
   vars = {
     asg_list = join(",", [for key, value in aws_autoscaling_group.worker :
       value.name
@@ -63,7 +63,7 @@ resource "helm_release" "csi_plugin" {
   repository = "https://kubernetes-sigs.github.io/aws-ebs-csi-driver"
   version    = "0.9.14"
   values = [
-    "${file("${path.module}/files/csi.yaml")}",
+    file("${path.module}/files/csi.yaml"),
   ]
   depends_on = [
     null_resource.wait_cluster_ready
