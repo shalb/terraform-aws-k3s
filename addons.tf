@@ -36,6 +36,9 @@ data template_file "rolling_updater" {
     ])
     aws_region = var.region
   }
+  depends_on = [
+    null_resource.wait_cluster_ready
+  ]
 }
 
 resource "null_resource" "rolling_updater_addon_install" {
