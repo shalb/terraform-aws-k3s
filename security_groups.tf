@@ -44,11 +44,11 @@ resource "aws_security_group" "master" {
   }
 
   ingress {
-    description     = "etcd"
-    from_port       = 2379
-    to_port         = 2380
-    protocol        = "tcp"
-    security_groups = [aws_security_group.worker.id]
+    description = "etcd"
+    from_port   = 2379
+    to_port     = 2380
+    protocol    = "tcp"
+    cidr_blocks = data.aws_subnet.public_subnet.*.cidr_block
   }
   ingress {
     description = "allow vxlan master self"
@@ -58,11 +58,11 @@ resource "aws_security_group" "master" {
     self        = true
   }
   ingress {
-    description     = "allow vxlan master worker"
-    from_port       = 8472
-    to_port         = 8472
-    protocol        = "udp"
-    security_groups = [aws_security_group.worker.id]
+    description = "allow vxlan master worker"
+    from_port   = 8472
+    to_port     = 8472
+    protocol    = "udp"
+    cidr_blocks = data.aws_subnet.public_subnet.*.cidr_block
   }
 
   ingress {
@@ -73,11 +73,11 @@ resource "aws_security_group" "master" {
     self        = true
   }
   ingress {
-    description     = "prometheus operator metrics"
-    from_port       = 6942
-    to_port         = 6942
-    protocol        = "tcp"
-    security_groups = [aws_security_group.worker.id]
+    description = "prometheus operator metrics"
+    from_port   = 6942
+    to_port     = 6942
+    protocol    = "tcp"
+    cidr_blocks = data.aws_subnet.public_subnet.*.cidr_block
   }
 }
 
@@ -123,7 +123,7 @@ resource "aws_security_group" "worker" {
     from_port       = 8472
     to_port         = 8472
     protocol        = "udp"
-    security_groups = [aws_security_group.worker.id]
+    security_groups = [aws_security_group.master.id]
   }
 
   ingress {
@@ -138,6 +138,6 @@ resource "aws_security_group" "worker" {
     from_port       = 6942
     to_port         = 6942
     protocol        = "tcp"
-    security_groups = [aws_security_group.worker.id]
+    security_groups = [aws_security_group.master.id]
   }
 }
