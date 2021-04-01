@@ -1,8 +1,7 @@
 
 locals {
   name                   = var.cluster_name
-  cluster_dns_zone       = "${var.cluster_name}.${var.domain}"
-  cluster_domain         = "cp.${local.cluster_dns_zone}"
+  cluster_domain         = "cp.${var.domain}"
   s3_kubeconfig_filename = "kubeconfig"
   common_tags = {
     "kubernetes.io/cluster/${var.cluster_name}" = "owned"
