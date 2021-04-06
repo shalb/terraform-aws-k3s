@@ -10,7 +10,7 @@ Terraform module that creates a HA [K3s Cluster](https://k3s.io/) in AWS cloud.
 
 | Name | Version |
 |------|---------|
-| terraform | ~> 0.13.4 |
+| terraform | >= 0.13.4 |
 | aws | ~> 3.0 |
 | helm | ~> 1.0 |
 | null | ~> 2.1 |
