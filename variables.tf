@@ -93,20 +93,27 @@ variable extra_args {
 }
 
 
-variable master_iam_instance_profile {
-  description = "IAM instance profile to be attached to master instances"
-  type        = string
-  default     = ""
+variable master_iam_policies {
+  description = "A list of IAM policies ARNs to be attached to master instances"
+  type        = list(string)
+  default     = []
 }
 
-variable worker_iam_instance_profile {
-  description = "IAM instance profile to be attached to worker instances"
-  type        = string
-  default     = ""
+variable worker_iam_policies {
+  description = "A list of IAM policies ARNs to be attached to all worker instances"
+  type        = list(string)
+  default     = []
 }
 
-variable "kubeconfig_filename" {
-  description = "Name of file to save kubeconfig local."
-  type        = string
-  default     = "./kubeconfig"
+
+variable enable_asg_rolling_auto_update {
+  description = "Turn on/off automatic rolling update of worker ASGs, when launch configuration changed."
+  type        = bool
+  default     = false
+}
+
+variable enable_scheduling_on_master {
+  description = "Allows running pods on master nodes."
+  type        = bool
+  default     = false
 }

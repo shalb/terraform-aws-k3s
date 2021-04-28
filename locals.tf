@@ -1,8 +1,7 @@
 
 locals {
   name                   = var.cluster_name
-  cluster_dns_zone       = "${var.cluster_name}.${var.domain}"
-  cluster_domain         = "cp.${local.cluster_dns_zone}"
+  cluster_domain         = "cp.${var.domain}"
   s3_kubeconfig_filename = "kubeconfig"
   common_tags = {
     "kubernetes.io/cluster/${var.cluster_name}" = "owned"
@@ -13,9 +12,7 @@ locals {
   default_worker_node_labels = [
     #  "node-role.kubernetes.io/worker=true"
   ]
-  default_master_node_taints = [
-    #  "node-role.kubernetes.io/master:NoSchedule"
-  ]
+  default_master_node_taints = var.enable_scheduling_on_master == true ? [] : ["node-role.kubernetes.io/master:NoSchedule"]
   worker_groups_map = {
     for node_group_config in var.worker_node_groups :
     node_group_config.name => {
@@ -44,6 +41,7 @@ locals {
       ]
     }
   }
+
   master_tags = [
     for tag_key, tag_val in merge(var.master_additional_tags, local.common_tags, { Name = "${var.cluster_name}-master" }) : {
       key                 = tag_key
@@ -64,6 +62,9 @@ locals {
       "--kube-apiserver-arg \"${key}=${value}\""
   ])
   custom_args = join(" ", var.extra_args)
+
+  master_iam_policy_default = file("${path.module}/policies/master.json")
+  worker_iam_policy_default = file("${path.module}/policies/worker.json")
 }
 
 resource null_resource "validate_domain_length" {

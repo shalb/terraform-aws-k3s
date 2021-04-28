@@ -6,7 +6,7 @@ resource "aws_launch_template" "master" {
   user_data     = data.template_cloudinit_config.init-master[count.index].rendered
   key_name      = var.key_name
   iam_instance_profile {
-    name = aws_iam_instance_profile.k3s_master_profile.name
+    name = aws_iam_instance_profile.master_profile.name
   }
   block_device_mappings {
     device_name = "/dev/sda1"
@@ -31,8 +31,9 @@ resource "aws_launch_template" "worker" {
   user_data     = data.template_cloudinit_config.init-worker[each.key].rendered
   key_name      = var.key_name
   iam_instance_profile {
-    name = var.worker_iam_instance_profile
+    name = aws_iam_instance_profile.worker_profile.name
   }
+
   block_device_mappings {
     device_name = "/dev/sda1"
     ebs {

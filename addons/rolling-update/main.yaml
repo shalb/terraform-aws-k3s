@@ -1,0 +1,114 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: asg-roller
+  labels:
+    name: asg-roller
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: asg-roller
+  labels:
+    name: asg-roller
+rules:
+  - apiGroups:
+      - "*"
+    resources:
+      - "*"
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - "*"
+    resources:
+      - nodes
+    verbs:
+      - get
+      - list
+      - watch
+      - update
+      - patch
+  - apiGroups:
+      - "*"
+    resources:
+      - pods/eviction
+    verbs:
+      - get
+      - list
+      - create
+  - apiGroups:
+      - "*"
+    resources:
+      - pods
+    verbs:
+      - get
+      - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: asg-roller
+  labels:
+    name: asg-roller
+roleRef:
+  kind: ClusterRole
+  name: asg-roller
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+  - kind: ServiceAccount
+    name: asg-roller
+    namespace: kube-system
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aws-asg-roller
+  labels:
+    name: aws-asg-roller
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: aws-asg-roller
+  template:
+    metadata:
+      labels:
+        name: aws-asg-roller
+    spec:
+      containers:
+      - name: aws-asg-roller
+        image: 'deitch/aws-asg-roller:802da75cec20116ca499cef5abd3292136a32b07'
+        imagePullPolicy: Always
+        env:
+        - name: ROLLER_ASG
+          value: "${asg_list}"
+        - name: ROLLER_KUBERNETES
+          value: "true"
+        - name: ROLLER_VERBOSE
+          value: "true"
+        - name: ROLLER_ORIGINAL_DESIRED_ON_TAG
+          value: "true"
+        - name: ROLLER_DELETE_LOCAL_DATA
+          value: "true"
+        - name: ROLLER_IGNORE_DAEMONSETS
+          value: "true"
+        - name: AWS_REGION
+          value: "${aws_region}"
+      restartPolicy: Always
+      serviceAccountName: asg-roller
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: node-role.kubernetes.io/master
+                  operator: In
+                  values: ["true"]
