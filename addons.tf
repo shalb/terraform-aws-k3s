@@ -27,7 +27,7 @@ resource "null_resource" "cloud_controller_addon_install" {
   ]
 }
 
-data template_file "rolling_updater" {
+data "template_file" "rolling_updater" {
   count    = var.enable_asg_rolling_auto_update == true ? 1 : 0
   template = file("${path.module}/addons/rolling-update/main.yaml")
   vars = {
@@ -53,21 +53,6 @@ resource "null_resource" "rolling_updater_addon_install" {
       KUBECONFIG = base64encode(data.aws_s3_bucket_object.get_kubeconfig.body)
     }
   }
-  depends_on = [
-    null_resource.wait_cluster_ready
-  ]
-}
-
-
-resource "helm_release" "csi_plugin" {
-  chart      = "aws-ebs-csi-driver"
-  name       = "aws-ebs-csi-driver"
-  namespace  = "kube-system"
-  repository = "https://kubernetes-sigs.github.io/aws-ebs-csi-driver"
-  version    = "0.9.14"
-  values = [
-    file("${path.module}/files/csi.yaml"),
-  ]
   depends_on = [
     null_resource.wait_cluster_ready
   ]

@@ -1,12 +1,12 @@
-resource random_pet "iam" {}
+resource "random_pet" "iam" {}
 
 ########### masters #############
-resource aws_iam_instance_profile "master_profile" {
+resource "aws_iam_instance_profile" "master_profile" {
   name = substr("${local.name}-master-${random_pet.iam.id}", 0, 32)
   role = aws_iam_role.master_role.name
 }
 
-resource aws_iam_role "master_role" {
+resource "aws_iam_role" "master_role" {
   name = substr("${local.name}-master-${random_pet.iam.id}", 0, 32)
   path = "/"
 
@@ -31,18 +31,18 @@ resource aws_iam_role "master_role" {
 EOF
 }
 
-resource aws_iam_policy "master_default_policy" {
+resource "aws_iam_policy" "master_default_policy" {
   name   = substr("${local.name}-master-${random_pet.iam.id}", 0, 32)
   policy = file("${path.module}/policies/master.json")
 }
 
-resource aws_iam_policy_attachment "master-attach-default" {
+resource "aws_iam_policy_attachment" "master-attach-default" {
   name       = substr("${local.name}-master-${random_pet.iam.id}", 0, 32)
   roles      = [aws_iam_role.master_role.name]
   policy_arn = aws_iam_policy.master_default_policy.arn
 }
 
-resource aws_iam_policy_attachment "master-attach" {
+resource "aws_iam_policy_attachment" "master-attach" {
   for_each   = toset(var.master_iam_policies)
   name       = substr("${local.name}-master-${random_pet.iam.id}", 0, 32)
   roles      = [aws_iam_role.master_role.name]
@@ -51,17 +51,17 @@ resource aws_iam_policy_attachment "master-attach" {
 
 ########### workers ############
 
-resource aws_iam_instance_profile "worker_profile" {
+resource "aws_iam_instance_profile" "worker_profile" {
   name = substr("${local.name}-worker-${random_pet.iam.id}", 0, 32)
   role = aws_iam_role.worker_role.name
 }
 
-resource aws_iam_policy "worker_default_policy" {
+resource "aws_iam_policy" "worker_default_policy" {
   name   = substr("${local.name}-worker-${random_pet.iam.id}", 0, 32)
   policy = local.worker_iam_policy_default
 }
 
-resource aws_iam_role "worker_role" {
+resource "aws_iam_role" "worker_role" {
   name = substr("${local.name}-worker-${random_pet.iam.id}", 0, 32)
   path = "/"
 
@@ -86,13 +86,13 @@ resource aws_iam_role "worker_role" {
 EOF
 }
 
-resource aws_iam_policy_attachment "worker-attach-default" {
+resource "aws_iam_policy_attachment" "worker-attach-default" {
   name       = substr("${local.name}-worker-${random_pet.iam.id}", 0, 32)
   roles      = [aws_iam_role.worker_role.name]
   policy_arn = aws_iam_policy.worker_default_policy.arn
 }
 
-resource aws_iam_policy_attachment "worker-attach-global" {
+resource "aws_iam_policy_attachment" "worker-attach-global" {
   for_each   = toset(var.worker_iam_policies)
   name       = substr("${local.name}-worker-${random_pet.iam.id}", 0, 32)
   roles      = [aws_iam_role.worker_role.name]
