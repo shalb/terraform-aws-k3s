@@ -12,7 +12,6 @@ Terraform module that creates a HA [K3s Cluster](https://k3s.io/) in AWS cloud.
 |------|---------|
 | terraform | >= 0.13.4 |
 | aws | ~> 3.0 |
-| helm | ~> 1.0 |
 | null | ~> 2.1 |
 | random | ~> 2.2 |
 | template | ~> 2.1 |
@@ -22,7 +21,6 @@ Terraform module that creates a HA [K3s Cluster](https://k3s.io/) in AWS cloud.
 | Name | Version |
 |------|---------|
 | aws | ~> 3.0 |
-| helm | ~> 1.0 |
 | null | ~> 2.1 |
 | random | ~> 2.2 |
 | template | ~> 2.1 |
@@ -35,19 +33,19 @@ Terraform module that creates a HA [K3s Cluster](https://k3s.io/) in AWS cloud.
 | domain | DNS zone record to assign to NLB | `string` | n/a | yes |
 | enable\_asg\_rolling\_auto\_update | Turn on/off automatic rolling update of worker ASGs, when launch configuration changed. | `bool` | `false` | no |
 | enable\_scheduling\_on\_master | Allows running pods on master nodes. | `bool` | `false` | no |
-| extra\_api\_args | A map of additional arguments for kubeapi. Key - argument without --, and it value. See examples. | `map` | `{}` | no |
-| extra\_args | A list of additional arguments for k3s server | `list` | `[]` | no |
+| extra\_api\_args | A map of additional arguments for kubeapi. Key - argument without --, and it value. See examples. | `map(any)` | `{}` | no |
+| extra\_args | A list of additional arguments for k3s server | `list(any)` | `[]` | no |
 | k3s\_version | Version of k3s engine: https://github.com/rancher/k3s/releases | `string` | n/a | yes |
 | key\_name | The key name to use for the instances | `string` | n/a | yes |
 | master\_additional\_tags | A list of additional tags for master nodes instances | `map(string)` | `{}` | no |
 | master\_iam\_policies | A list of IAM policies ARNs to be attached to master instances | `list(string)` | `[]` | no |
 | master\_instance\_type | Instance type for master nodes. | `string` | `"t3.medium"` | no |
 | master\_node\_count | Number of nodes. Should be even: 1,3,5,7.. | `number` | `3` | no |
-| master\_node\_labels | A list of additional labels to be added to the k3s master nodes | `list` | `[]` | no |
-| master\_node\_taints | A list of additional taints to be added to the k3s master nodes | `list` | `[]` | no |
+| master\_node\_labels | A list of additional labels to be added to the k3s master nodes | `list(any)` | `[]` | no |
+| master\_node\_taints | A list of additional taints to be added to the k3s master nodes | `list(any)` | `[]` | no |
 | master\_root\_volume\_size | Root block device size on nodes | `number` | `50` | no |
 | master\_security\_group\_ids | A list of additional security groups to be attached to master nodes | `list(string)` | `[]` | no |
-| public\_subnets | List of public subnets to run ingress LB | `list` | n/a | yes |
+| public\_subnets | List of public subnets to run ingress LB | `list(any)` | n/a | yes |
 | region | AWS Region | `string` | n/a | yes |
 | s3\_bucket | Kubeconfig Storage bucket | `any` | n/a | yes |
 | worker\_iam\_policies | A list of IAM policies ARNs to be attached to all worker instances | `list(string)` | `[]` | no |
