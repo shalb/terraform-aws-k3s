@@ -65,8 +65,14 @@ resource "aws_autoscaling_group" "master" {
     id      = aws_launch_template.master[count.index].id
     version = "$Latest"
   }
-  tags = local.master_tags
-
+  dynamic "tag" {
+    for_each = local.master_tags
+    content {
+      key                 = tag.value.key
+      propagate_at_launch = tag.value.propagate_at_launch
+      value               = tag.value.value
+    }
+  }
   depends_on = [
     aws_route53_record.alb_ingress,
     aws_lb.kubeapi
@@ -86,7 +92,14 @@ resource "aws_autoscaling_group" "worker" {
     version = "$Latest"
   }
 
-  tags = each.value.tags
+  dynamic "tag" {
+    for_each = local.master_tags
+    content {
+      key                 = tag.value.key
+      propagate_at_launch = tag.value.propagate_at_launch
+      value               = tag.value.value
+    }
+  }
 
   depends_on = [
     aws_route53_record.alb_ingress,
