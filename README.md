@@ -1,9 +1,55 @@
 # AWS K3s Terraform Module
 
-Terraform module that creates a HA [K3s Cluster](https://k3s.io/) in AWS cloud.
+[![Cluster.dev logo](https://raw.githubusercontent.com/shalb/cluster.dev/master/docs/images/cdev-module-banner.png?sanitize=true)](https://cluster.dev/)
 
-## Prerequisites
+Terraform module that creates a [K3s Cluster](https://k3s.io/) with core add-ons in AWS cloud.
 
+This Terraform module is also used as part of the [AWS-K3s Cluster.dev stack template](https://github.com/shalb/cdev-aws-k3s) to start and provision a K3s cluster with add-ons in AWS cloud. 
+
+## Features
+
+The module creates a high-availability K3s cluster in AWS cloud and deploys to the cluster the following add-ons:
+
+1. **Cert-Manager**: Automate the management and issuance of TLS certificates for your applications.
+   
+2. **Ingress-Nginx**: A high-performance, production-ready HTTP and HTTPS Ingress controller for Kubernetes.
+   
+3. **External-DNS**: Automatically configure DNS records for your Kubernetes services.
+
+4. **Argo CD**: Continuous Delivery for Kubernetes.
+
+## Usage
+
+To use this Terraform module to provision a K3s cluster with the specified add-ons, follow these steps:
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/shalb/terraform-aws-k3s.git
+   ```
+
+2. **Configure variables**: Customize your K3s cluster configuration by either creating a `terraform.tfvars` file or providing variables inline. For example:
+   ```hcl
+   # Cluster Configuration
+   cluster_name = "my-k3s-cluster"
+   region       = "us-east-1"
+
+   # Node Configuration
+   node_instance_type = "t3.medium"
+   node_count         = 3
+
+   # Networking
+   vpc_id            = "vpc-0123456789abcdef0"
+   subnets           = ["subnet-0123456789abcdef1", "subnet-0123456789abcdef2"]
+   ```
+   
+3. **Apply the configuration**:
+   ```hcl
+   terraform apply
+   ```
+
+4. **Access the K3s cluster**: After the provisioning is complete, you can access your K3s cluster using the K3s CLI or `kubectl` configured to use the K3s cluster context.
+ 
+5. **Manage and deploy applications**: Utilize the K3s cluster for deploying, managing, and scaling your containerized applications.   
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
