@@ -46,7 +46,7 @@ software_install() {
         sleep 2
     done
   fi
-  curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION='v${k3s_version}' sh -s - $${START_ARGS} --token ${k3s_server_token} $${SERVER_URL} $${CLUSTER_INIT}
+  curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION='${k3s_version}' sh -s - $${START_ARGS} --token ${k3s_server_token} $${SERVER_URL} $${CLUSTER_INIT}
 
 %{ if instance_role == "master" }
   until (kubectl version); do
