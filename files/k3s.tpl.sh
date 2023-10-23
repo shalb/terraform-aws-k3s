@@ -26,6 +26,7 @@ software_install() {
   START_ARGS="server --cluster-domain ${cluster_domain} --secrets-encryption --node-name $(curl http://169.254.169.254/latest/meta-data/local-hostname) \
   --disable-cloud-controller \
   --disable servicelb \
+  --tls-san ${cluster_domain} \
   --kubelet-arg="cloud-provider=external" \
   --kubelet-arg="provider-id=aws:///$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)/$(curl -s http://169.254.169.254/latest/meta-data/instance-id)" \
   "

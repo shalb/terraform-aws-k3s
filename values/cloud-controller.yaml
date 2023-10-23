@@ -1,0 +1,9 @@
+args:
+  - --v=2
+  - --cloud-provider=aws
+  - --configure-cloud-routes=false
+hostNetworking: true
+nodeSelector:
+  node-role.kubernetes.io/control-plane: "true"
+image:
+  tag: "v1.27.1"
