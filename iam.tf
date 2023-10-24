@@ -21,7 +21,7 @@ resource "aws_iam_role" "master_role" {
         {
             "Action": "sts:AssumeRole",
             "Principal": {
-               "Service": "ec2.amazonaws.com"
+              "Service": "ec2.amazonaws.com"
             },
             "Effect": "Allow",
             "Sid": ""
@@ -76,7 +76,7 @@ resource "aws_iam_role" "worker_role" {
         {
             "Action": "sts:AssumeRole",
             "Principal": {
-               "Service": "ec2.amazonaws.com"
+              "Service": "ec2.amazonaws.com"
             },
             "Effect": "Allow",
             "Sid": ""

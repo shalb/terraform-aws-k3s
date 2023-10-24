@@ -1,59 +1,165 @@
-locals {
-  cloud_controller_addons_md5 = flatten([
-    for file in fileset(path.module, "addons/cloud-controller/**") : [
-      md5(file("${path.module}/${file}"))
-    ]
-  ])
-  rolling_updater_addons_md5 = flatten([
-    for file in fileset(path.module, "addons/rolling-update/**") : [
-      md5(file("${path.module}/${file}"))
-    ]
-  ])
+resource "helm_release" "aws_lb_controller" {
+  namespace  = "kube-system"
+  name       = "aws-cloud-controller-manager"
+  repository = "https://kubernetes.github.io/cloud-provider-aws"
+  chart      = "aws-cloud-controller-manager"
+  version    = "0.0.8"
+  values = [
+    file("${path.module}/values/cloud-controller.yaml")
+  ]
 }
 
-resource "null_resource" "cloud_controller_addon_install" {
-  triggers = {
-    md5 = join(" ", local.cloud_controller_addons_md5)
-  }
-  provisioner "local-exec" {
-    command     = "kubectl apply --kubeconfig <(echo $KUBECONFIG | base64 -d) -R -f ${path.module}/addons/cloud-controller/"
-    interpreter = ["/bin/bash", "-c"]
-    environment = {
-      KUBECONFIG = base64encode(data.aws_s3_bucket_object.get_kubeconfig.body)
+resource "helm_release" "aws_lb_csi" {
+  namespace  = "kube-system"
+  name       = "aws-ebs-csi-driver"
+  repository = "https://kubernetes-sigs.github.io/aws-ebs-csi-driver"
+  chart      = "aws-ebs-csi-driver"
+  version    = "2.24.0"
+  values = [
+    file("${path.module}/values/csi.yaml")
+  ]
+}
+
+resource "kubernetes_service_account" "asg_roller" {
+  metadata {
+    name      = "asg-roller"
+    namespace = "kube-system"
+    labels = {
+      name = "asg-roller"
     }
   }
-  depends_on = [
-    null_resource.wait_cluster_ready
-  ]
 }
 
-data "template_file" "rolling_updater" {
-  count    = var.enable_asg_rolling_auto_update == true ? 1 : 0
-  template = file("${path.module}/addons/rolling-update/main.yaml")
-  vars = {
-    asg_list = join(",", [for key, value in aws_autoscaling_group.worker :
-      value.name
-    ])
-    aws_region = var.region
-  }
-  depends_on = [
-    null_resource.wait_cluster_ready
-  ]
-}
-
-resource "null_resource" "rolling_updater_addon_install" {
-  count = var.enable_asg_rolling_auto_update == true ? 1 : 0
-  triggers = {
-    yaml = data.template_file.rolling_updater[0].rendered
-  }
-  provisioner "local-exec" {
-    command     = "kubectl apply --kubeconfig <(echo $KUBECONFIG | base64 -d) -R -f -<<EOF\n${self.triggers.yaml}\nEOF"
-    interpreter = ["/bin/bash", "-c"]
-    environment = {
-      KUBECONFIG = base64encode(data.aws_s3_bucket_object.get_kubeconfig.body)
+resource "kubernetes_cluster_role" "asg_roller" {
+  metadata {
+    name = "asg-roller"
+    labels = {
+      name = "asg-roller"
     }
   }
-  depends_on = [
-    null_resource.wait_cluster_ready
-  ]
+  rule {
+    verbs      = ["get", "list", "watch"]
+    api_groups = ["*"]
+    resources  = ["*"]
+  }
+  rule {
+    verbs      = ["get", "list", "watch", "update", "patch"]
+    api_groups = ["*"]
+    resources  = ["nodes"]
+  }
+  rule {
+    verbs      = ["get", "list", "create"]
+    api_groups = ["*"]
+    resources  = ["pods/eviction"]
+  }
+  rule {
+    verbs      = ["get", "list"]
+    api_groups = ["*"]
+    resources  = ["pods"]
+  }
 }
+
+resource "kubernetes_cluster_role_binding" "asg_roller" {
+  metadata {
+    name = "asg-roller"
+    labels = {
+      name = "asg-roller"
+    }
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "asg-roller"
+    namespace = "kube-system"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "asg-roller"
+  }
+}
+
+resource "kubernetes_deployment" "aws_asg_roller" {
+  metadata {
+    name      = "aws-asg-roller"
+    namespace = "kube-system"
+    labels = {
+      name = "aws-asg-roller"
+    }
+  }
+  spec {
+    replicas = 1
+    selector {
+      match_labels = {
+        name = "aws-asg-roller"
+      }
+    }
+
+    template {
+      metadata {
+        labels = {
+          name = "aws-asg-roller"
+        }
+      }
+
+      spec {
+        container {
+          name  = "aws-asg-roller"
+          image = "deitch/aws-asg-roller:802da75cec20116ca499cef5abd3292136a32b07"
+          env {
+            name  = "ROLLER_ASG"
+            value = local.asg_list
+          }
+          env {
+            name  = "ROLLER_KUBERNETES"
+            value = "true"
+          }
+          env {
+            name  = "ROLLER_VERBOSE"
+            value = "true"
+          }
+          env {
+            name  = "ROLLER_ORIGINAL_DESIRED_ON_TAG"
+            value = "true"
+          }
+          env {
+            name  = "ROLLER_DELETE_LOCAL_DATA"
+            value = "true"
+          }
+          env {
+            name  = "ROLLER_IGNORE_DAEMONSETS"
+            value = "true"
+          }
+          env {
+            name  = "AWS_REGION"
+            value = var.region
+          }
+          image_pull_policy = "Always"
+        }
+
+        restart_policy       = "Always"
+        service_account_name = "asg-roller"
+
+        affinity {
+          node_affinity {
+            required_during_scheduling_ignored_during_execution {
+              node_selector_term {
+                match_expressions {
+                  key      = "node-role.kubernetes.io/master"
+                  operator = "In"
+                  values   = ["true"]
+                }
+              }
+            }
+          }
+        }
+
+        toleration {
+          key      = "node-role.kubernetes.io/master"
+          operator = "Exists"
+          effect   = "NoSchedule"
+        }
+      }
+    }
+  }
+}
+

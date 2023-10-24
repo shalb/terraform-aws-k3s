@@ -66,6 +66,7 @@ variable "s3_bucket" {
 
 variable "domain" {
   description = "DNS zone record to assign to NLB"
+  default     = ""
   type        = string
 }
 

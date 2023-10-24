@@ -74,7 +74,6 @@ resource "aws_autoscaling_group" "master" {
     }
   }
   depends_on = [
-    aws_route53_record.alb_ingress,
     aws_lb.kubeapi
   ]
 }
@@ -102,7 +101,6 @@ resource "aws_autoscaling_group" "worker" {
   }
 
   depends_on = [
-    aws_route53_record.alb_ingress,
     aws_lb.kubeapi
   ]
 }

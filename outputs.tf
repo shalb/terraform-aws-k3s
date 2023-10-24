@@ -3,7 +3,7 @@ output "k8s_nlb_dns_name" {
 }
 
 output "kubeconfig" {
-  value = data.aws_s3_bucket_object.get_kubeconfig.body
+  value = data.aws_s3_object.get_kubeconfig.body
 }
 
 output "kubeconfig_s3_url" {

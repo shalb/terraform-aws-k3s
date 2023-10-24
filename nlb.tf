@@ -4,9 +4,9 @@ resource "aws_lb" "kubeapi" {
   load_balancer_type = "network"
   subnets            = var.public_subnets
   tags               = local.common_tags
-  depends_on = [
-    null_resource.validate_domain_length
-  ]
+  # depends_on = [
+  #   null_resource.validate_domain_length
+  # ]
 }
 
 resource "aws_lb_listener" "kubeapi" {
@@ -44,8 +44,9 @@ resource "aws_lb_target_group" "kubeapi" {
 }
 
 resource "aws_route53_record" "alb_ingress" {
+  count           = var.domain == "" ? 0 : 1
   allow_overwrite = true
-  zone_id         = data.aws_route53_zone.main_zone.id
+  zone_id         = data.aws_route53_zone.main_zone.0.id
   name            = local.cluster_domain
   type            = "A"
 

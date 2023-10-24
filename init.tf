@@ -14,3 +14,19 @@ terraform {
 provider "aws" {
   region = var.region
 }
+
+provider "kubernetes" {
+  host                   = "${var.domain == "" ? aws_lb.kubeapi.dns_name : "cp.${var.domain}"}:6443"
+  cluster_ca_certificate = local.k_config.host_cert
+  client_key             = local.k_config.cert_data
+  client_certificate     = local.k_config.user_crt
+}
+
+provider "helm" {
+  kubernetes {
+    host                   = "${var.domain == "" ? aws_lb.kubeapi.dns_name : "cp.${var.domain}"}:6443"
+    cluster_ca_certificate = local.k_config.host_cert
+    client_key             = local.k_config.cert_data
+    client_certificate     = local.k_config.user_crt
+  }
+}

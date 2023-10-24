@@ -10,7 +10,7 @@ resource "null_resource" "wait_cluster_ready" {
 }
 
 # Not really secure as it will keep entire file as a plain text in tfstate
-data "aws_s3_bucket_object" "get_kubeconfig" {
+data "aws_s3_object" "get_kubeconfig" {
   key    = "${var.cluster_name}/${local.s3_kubeconfig_filename}"
   bucket = var.s3_bucket
   depends_on = [
@@ -20,8 +20,8 @@ data "aws_s3_bucket_object" "get_kubeconfig" {
 
 locals {
   k_config = element(flatten([
-    for cl in yamldecode(data.aws_s3_bucket_object.get_kubeconfig.body).clusters : [
-      for u in yamldecode(data.aws_s3_bucket_object.get_kubeconfig.body).users : {
+    for cl in yamldecode(data.aws_s3_object.get_kubeconfig.body).clusters : [
+      for u in yamldecode(data.aws_s3_object.get_kubeconfig.body).users : {
         host      = cl.cluster.server
         host_cert = base64decode(cl.cluster.certificate-authority-data)
         user_crt  = base64decode(u.user.client-certificate-data)

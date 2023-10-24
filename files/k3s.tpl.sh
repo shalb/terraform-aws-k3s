@@ -26,6 +26,7 @@ software_install() {
   START_ARGS="server --cluster-domain ${cluster_domain} --secrets-encryption --node-name $(curl http://169.254.169.254/latest/meta-data/local-hostname) \
   --disable-cloud-controller \
   --disable servicelb \
+  --tls-san ${cluster_domain} \
   --kubelet-arg="cloud-provider=external" \
   --kubelet-arg="provider-id=aws:///$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)/$(curl -s http://169.254.169.254/latest/meta-data/instance-id)" \
   "
@@ -46,7 +47,7 @@ software_install() {
         sleep 2
     done
   fi
-  curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION='v${k3s_version}' sh -s - $${START_ARGS} --token ${k3s_server_token} $${SERVER_URL} $${CLUSTER_INIT}
+  curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION='${k3s_version}' sh -s - $${START_ARGS} --token ${k3s_server_token} $${SERVER_URL} $${CLUSTER_INIT}
 
 %{ if instance_role == "master" }
   until (kubectl version); do
